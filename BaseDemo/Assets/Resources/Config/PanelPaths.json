@@ -1,0 +1,37 @@
+[
+    {
+        "panelTypeString": "Background",
+        "panelName": "MainMenuPanel",
+        "panelPath": "Prefabs/UI/MainMenuPanel"
+    },
+    {
+        "panelTypeString": "Normal",
+        "panelName": "BagPanel",
+        "panelPath": "Prefabs/UI/BagPanel"
+    },
+    {
+        "panelTypeString": "Normal",
+        "panelName": "ShopPanel",
+        "panelPath": "Prefabs/UI/ShopPanel"
+    },
+    {
+        "panelTypeString": "Normal",
+        "panelName": "BattlePanel",
+        "panelPath": "Prefabs/UI/BattlePanel"
+    },
+    {
+        "panelTypeString": "Normal",
+        "panelName": "TaskPanel",
+        "panelPath": "Prefabs/UI/TaskPanel"
+    },
+    {
+        "panelTypeString": "Normal",
+        "panelName": "CharacterPanel",
+        "panelPath": "Prefabs/UI/CharacterPanel"
+    },
+    {
+        "panelTypeString": "Poped",
+        "panelName": "BattleBagPanel",
+        "panelPath": "Prefabs/UI/BattleBagPanel"
+    }
+]
