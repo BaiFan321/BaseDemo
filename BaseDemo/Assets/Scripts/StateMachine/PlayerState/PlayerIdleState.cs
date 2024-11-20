@@ -29,7 +29,7 @@ public class PlayerIdleState : IState
 
     public void OnUpdate()
     {
-        if (playerInput.moveInput != Vector2.zero)
+        if (playerInput.MoveInput != Vector2.zero)
         {
             player.TranslateState(PlayerStateType.Move);
         }

@@ -14,6 +14,10 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
 
     private bool hasItem = false;
 
+    public GameObject ItemIntroduce;
+
+    private GameObject curItemIntroduce;
+
     //将物品放入Slot中
     public void LoadItemUI(ItemUI itemUI, int index)
     {
@@ -75,6 +79,11 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
         if (IsFilled())
         {
             ///展示物品信息
+            if (curItemIntroduce == null)
+            {
+                curItemIntroduce = GameObject.Instantiate(ItemIntroduce, transform);
+                curItemIntroduce.name = ItemIntroduce.name;
+            }
         }
     }
 
@@ -83,6 +92,14 @@ public class Slot : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler, IP
         if (IsFilled())
         {
             ///停止展示物品信息
+            Transform introduce = gameObject.transform.Find("ItemIntroduce");
+            if (introduce != null)
+            {
+                Debug.Log("销毁介绍");
+                introduce.gameObject.SetActive(false);
+                GameObject.Destroy(introduce.gameObject);
+                curItemIntroduce = null;
+            }
         }
     }
 }

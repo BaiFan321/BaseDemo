@@ -27,6 +27,7 @@ public class BagManager
     private List<PlayerBagItem> m_WeaponItems = new();
     private List<PlayerBagItem> m_DrugItems = new();
     private List<PlayerBagItem> m_MaterialItems = new();
+    private List<PlayerBagItem> m_OtherItems = new();
 
     private List<ItemUI> itemUIList = new();
 
@@ -40,13 +41,20 @@ public class BagManager
     /// <summary>
     /// 加载玩家数据
     /// </summary>
-    public void LoadItem()
+    public void FirstLoadItem()
     {
         scrollList = canvas.GetComponent<Transform>().Find("BagPanel").GetComponent<Transform>().Find("Items").GetComponent<InfiniteScrollList>();
+
 
         //读取玩家数据,并实例化为ItemUI
         InitPlayerBagData();
 
+    }
+
+    public void LoadItem()
+    {
+        DataToUI(m_AllItems);
+        ChangeSlot(itemUIList);
     }
 
     public void LoadItem(PlayerBagItemType itemType)
@@ -54,7 +62,19 @@ public class BagManager
         switch (itemType)
         {
             case PlayerBagItemType.Weapon:
-                    break;
+                DataToUI(m_WeaponItems);
+                ChangeSlot(itemUIList);
+                 break;
+            case PlayerBagItemType.Drug:
+                DataToUI(m_DrugItems);
+                ChangeSlot(itemUIList);
+                break;
+            case PlayerBagItemType.Material:
+                DataToUI(m_MaterialItems);
+                ChangeSlot(itemUIList);
+                break;
+            case PlayerBagItemType.Other:
+                break;
             default:
                 break;
         }
@@ -64,20 +84,8 @@ public class BagManager
     private void InitPlayerBagData() 
     {
         List<PlayerBagItem> playerBagItems = PlayerBagData.Instance.GetPlayerBagData();
-        if(playerBagItems != null)
-        {
-            foreach (var item in playerBagItems)
-            {
-                if(item != null)
-                {
-                    DataToUI(item);
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("BagManager 输出失败");
-        }
+        BagDataSort(playerBagItems);
+        DataToUI(playerBagItems);
 
         if(itemUIList != null)
         {
@@ -85,10 +93,28 @@ public class BagManager
         }
     }
 
-    private void DataToUI(PlayerBagItem item)
+
+    private void DataToUI(List<PlayerBagItem> playerBagItems)
     {
-        ItemUI itemUI = new ItemUI(item);
-        itemUIList.Add(itemUI);
+        if(itemUIList != null)
+        {
+            itemUIList.Clear();
+        }
+        if (playerBagItems != null)
+        {
+            foreach (var item in playerBagItems)
+            {
+                if (item != null)
+                {
+                    ItemUI itemUI = new ItemUI(item);
+                    itemUIList.Add(itemUI);
+                }
+            }
+        }
+        else
+        {
+            Debug.Log("BagManager 输出失败");
+        }
     }
 
     //装载进入Slot里
@@ -97,11 +123,17 @@ public class BagManager
         scrollList.Initialize(itemUIList);
     }
 
+    private void ChangeSlot(List<ItemUI> itemUIList)
+    {
+        scrollList.DataChange(itemUIList);
+    }
+
     //玩家数据分类
     private void BagDataSort(List<PlayerBagItem>  m_items)
     {
         foreach (var bagItem in m_items)
         {
+            m_AllItems.Add(bagItem);
             switch (bagItem.BagType)
             {
                 case (int)PlayerBagItemType.Weapon:
@@ -112,6 +144,9 @@ public class BagManager
                     break;
                 case (int)PlayerBagItemType.Material:
                     m_MaterialItems.Add(bagItem);
+                    break;
+                case (int)PlayerBagItemType.Other:
+                    m_OtherItems.Add(bagItem);
                     break;
                 default:
                     break;

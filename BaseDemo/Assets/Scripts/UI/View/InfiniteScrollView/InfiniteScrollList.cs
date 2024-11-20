@@ -18,7 +18,8 @@ public class InfiniteScrollList : MonoBehaviour
     //每个SlotBundle内Slot的数量
     [SerializeField]private int BundleSlotCount = 5;
 
-    public int SlotTotalCount { get; set; }
+    public int SlotTotalCount => itemUIList.Count;
+
     //每个Slot的大小
     [SerializeField] private Vector2 cellSize = new Vector2(200, 300);
     //每个Slot的间隔
@@ -47,8 +48,8 @@ public class InfiniteScrollList : MonoBehaviour
         }
     }
 
-    private readonly LinkedList<SlotsBundle<Slot>> slotsBundlesList = new();
-    private readonly Queue<SlotsBundle<Slot>> _slotsBundlesPool = new Queue<SlotsBundle<Slot>>();
+    private readonly LinkedList<SlotsBundle> slotsBundlesList = new();
+    private readonly Queue<SlotsBundle> _slotsBundlesPool = new Queue<SlotsBundle>();
 
 
     private void Awake()
@@ -63,10 +64,21 @@ public class InfiniteScrollList : MonoBehaviour
     public void Initialize(List<ItemUI> itemUIList)
     {
         this.itemUIList = itemUIList;
-        SlotTotalCount = this.itemUIList.Count;
         slotBundleSpace = new Vector2(cellSize.x + cellSpace.x, cellSize.y + cellSpace.y);
 
         CaculateContentSize();
+        UpdateDisplay();
+    }
+
+    public void DataChange(List<ItemUI> itemUIList)
+    {
+        this.itemUIList = itemUIList;
+        CaculateContentSize();
+        foreach(SlotsBundle slotsBundle in slotsBundlesList)
+        {
+            ReleaseSlotsBundle(slotsBundle);
+        }
+        slotsBundlesList.Clear();
         UpdateDisplay();
     }
 
@@ -87,7 +99,7 @@ public class InfiniteScrollList : MonoBehaviour
         {
             AddHead();
             AddTail();
-        } 
+        }
     }
 
     #region 调整Content中的SlotsBundle
@@ -126,7 +138,7 @@ public class InfiniteScrollList : MonoBehaviour
     }
 
     private void AddHead() {
-        SlotsBundle<Slot> bundle = slotsBundlesList.First.Value;
+        SlotsBundle bundle = slotsBundlesList.First.Value;
 
         Vector2 offset = default;
 
@@ -161,7 +173,7 @@ public class InfiniteScrollList : MonoBehaviour
 
         if (scrollDirection == InfiniteScrollDirection.Horizontal)
         {
-            SlotsBundle<Slot> bundle = slotsBundlesList.First.Value;
+            SlotsBundle bundle = slotsBundlesList.First.Value;
             while (OnViewRangeLeft(bundle.position))
             {
                 ReleaseSlotsBundle(bundle);
@@ -173,7 +185,7 @@ public class InfiniteScrollList : MonoBehaviour
         }
         else if (scrollDirection == InfiniteScrollDirection.Vertical)
         {
-            SlotsBundle<Slot> bundle = slotsBundlesList.First.Value;
+            SlotsBundle bundle = slotsBundlesList.First.Value;
             while (AboveViewRange(bundle.position))
             {
                 ReleaseSlotsBundle(bundle);
@@ -186,7 +198,7 @@ public class InfiniteScrollList : MonoBehaviour
     }
 
     private void AddTail() {
-        SlotsBundle<Slot> bundle = slotsBundlesList.Last.Value;
+        SlotsBundle bundle = slotsBundlesList.Last.Value;
 
         Vector2 offset = default;
 
@@ -228,7 +240,7 @@ public class InfiniteScrollList : MonoBehaviour
 
         if (scrollDirection == InfiniteScrollDirection.Horizontal)
         {
-            SlotsBundle<Slot> bundle = slotsBundlesList.Last.Value;
+            SlotsBundle bundle = slotsBundlesList.Last.Value;
             while (OnViewRangeRight(bundle.position))
             {
                 ReleaseSlotsBundle(bundle);
@@ -240,7 +252,7 @@ public class InfiniteScrollList : MonoBehaviour
         }
         else if (scrollDirection == InfiniteScrollDirection.Vertical)
         {
-            SlotsBundle<Slot> bundle = slotsBundlesList.Last.Value;
+            SlotsBundle bundle = slotsBundlesList.Last.Value;
             while (UnderViewRange(bundle.position))
             {
                 ReleaseSlotsBundle(bundle);
@@ -334,15 +346,15 @@ public class InfiniteScrollList : MonoBehaviour
     #endregion
 
     #region 从对象池中获取SlotBundle
-    private void ReleaseSlotsBundle(SlotsBundle<Slot> slotsBundle)
+    private void ReleaseSlotsBundle(SlotsBundle slotsBundle)
     {
         slotsBundle.Clear();
         _slotsBundlesPool.Enqueue(slotsBundle);  
     }
 
-    private SlotsBundle<Slot> GetSlotsBundle(int itemIndex, Vector2 position, Vector2 cellSize, Vector2 cellSpace)
+    private SlotsBundle GetSlotsBundle(int itemIndex, Vector2 position, Vector2 cellSize, Vector2 cellSpace)
     {
-        SlotsBundle<Slot> bundle;
+        SlotsBundle bundle;
         Vector2 slotOffset = default;
         if(scrollDirection == InfiniteScrollDirection.Horizontal)
         {
@@ -353,7 +365,7 @@ public class InfiniteScrollList : MonoBehaviour
         }
         if (_slotsBundlesPool.Count == 0)
         {
-            bundle = new SlotsBundle<Slot>(BundleSlotCount);
+            bundle = new SlotsBundle(BundleSlotCount);
             bundle.position = position;
             bundle.index = itemIndex;
             int i = itemIndex * BundleSlotCount;

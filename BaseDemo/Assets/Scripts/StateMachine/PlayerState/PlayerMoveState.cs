@@ -51,13 +51,13 @@ public class PlayerMoveState : IState
 
     void PlayerMovement()
     {
-        player.playerMove = new Vector3(playerInput.moveInput.x, 0, playerInput.moveInput.y);
-        if (playerInput.moveInput.sqrMagnitude > 0.1f)
+        player.playerMove = new Vector3(playerInput.MoveInput.x, 0, playerInput.MoveInput.y);
+        if (playerInput.MoveInput.sqrMagnitude > 0.1f)
         {
             player.isMove = true;
             player.curSpeed = Mathf.MoveTowards(player.curSpeed, player.maxSpeed, player.acceleratedSpeed * Time.deltaTime);
         }
-        else if (playerInput.moveInput.sqrMagnitude < 0.1f)
+        else if (playerInput.MoveInput.sqrMagnitude < 0.1f)
         {
             if(player.curSpeed > 0)
             {
@@ -81,7 +81,7 @@ public class PlayerMoveState : IState
 
     void PlayerRotation()
     {
-        if (playerInput.moveInput.sqrMagnitude < 0.1f)
+        if (playerInput.MoveInput.sqrMagnitude < 0.1f)
         {
             player.curRotateSpeed = Mathf.MoveTowards(player.curRotateSpeed, player.maxRotateSpeed, player.acceleratedRotateSpeed);
         }
